@@ -5,11 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NewChat"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" MinWidth="640" MinHeight="480">
     <Grid>
-        <TextBox HorizontalAlignment="Left" Height="372" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="772"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="10,387,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="653"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="668,388,0,0" VerticalAlignment="Top" Width="114"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Background="LemonChiffon" Margin="10" TextWrapping="Wrap" Text="TextBox" />
+        <TextBox Margin="10" TextWrapping="Wrap" Text="TextBox" Grid.Row="1" Grid.Column="0" />
+        <Button Content="Button" Margin="10" Grid.Row="1" Grid.Column="1"/>
 
     </Grid>
 </Window>
