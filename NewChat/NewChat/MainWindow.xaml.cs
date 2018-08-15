@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace NewChat
 {
@@ -20,9 +23,41 @@ namespace NewChat
     /// </summary>
     public partial class MainWindow : Window
     {
+        UdpClient _sender, _reciever;
+        IPEndPoint _localEP, _remoteEP;
+        Thread _recieverThread;
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var bytes = Encoding.Default.GetBytes(MessageTextBox.Text);
+            _sender.Send(bytes, bytes.Length, _remoteEP);
+        }
+
+        const int port = 1231;
         public MainWindow()
         {
             InitializeComponent();
+            _remoteEP = new IPEndPoint(IPAddress.Parse("192.168.26.255"), port);
+            _localEP = new IPEndPoint(IPAddress.Any, port);
+            _sender = new UdpClient();
+            _reciever = new UdpClient(_localEP);
+            _recieverThread = new Thread(RecieverTask) { IsBackground = true};
+            _recieverThread.Start();
+        }
+
+        private void RecieverTask()
+        {
+            while (true)
+            {
+                IPEndPoint recivers = new IPEndPoint(IPAddress.Any, 0);
+                var bytes = _reciever.Receive(ref recivers);
+                var message = Encoding.Default.GetString(bytes);
+                Dispatcher.Invoke(() =>ChatTextBox.Text += message + Environment.NewLine);
+            }
         }
     }
+    
+        
+ 
+    
 }

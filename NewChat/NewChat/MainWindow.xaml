@@ -15,9 +15,9 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
-        <TextBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Background="LemonChiffon" Margin="10" TextWrapping="Wrap" Text="TextBox" />
-        <TextBox Margin="10" TextWrapping="Wrap" Text="TextBox" Grid.Row="1" Grid.Column="0" />
-        <Button Content="Button" Margin="10" Grid.Row="1" Grid.Column="1"/>
+        <TextBox x:Name="ChatTextBox" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Background="LemonChiffon" Margin="10" TextWrapping="Wrap" />
+        <TextBox x:Name="MessageTextBox" Margin="10" TextWrapping="Wrap" Grid.Row="1" Grid.Column="0" />
+        <Button Content="Send" Margin="10" Grid.Row="1" Grid.Column="1" Click="Button_Click"/>
 
     </Grid>
 </Window>
