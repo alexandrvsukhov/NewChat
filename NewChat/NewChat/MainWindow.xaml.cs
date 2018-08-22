@@ -15,9 +15,29 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NewChat
 {
+    [Serializable]
+    class MessageInfo
+    {
+        public readonly string Message;
+        public readonly string UserName;
+        public string Color;
+        
+
+        public MessageInfo(string userName, string message, string colorValue)
+        {
+            UserName = userName;
+            Message = message;
+            Color = colorValue;
+            
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -26,16 +46,29 @@ namespace NewChat
         UdpClient _sender, _reciever;
         IPEndPoint _localEP, _remoteEP;
         Thread _recieverThread;
+        
 
-        private delegate void Del(string message);
+        
+        private void Send()
+        {
+            byte[] buffer;
+
+            var messageInfo = new MessageInfo(UserNameTextBox.Text, MessageTextBox.Text, ColorComboBox.SelectedValue.ToString());
+            using (var stream = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(stream, messageInfo);
+                buffer = stream.ToArray();
+            }
+
+          
+            _sender.Send(buffer, buffer.Length, _remoteEP);
+            MessageTextBox.Clear();
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageTextBox.WriteLine("Name");
-            var bytes = Encoding.Default.GetBytes(MessageTextBox.Text);
-            _sender.Send(bytes, bytes.Length, _remoteEP);
-            MessageTextBox.WriteLine(DateTime.Now);
-            Del Send = new Del(Button_Click);
+            Send();
         }
 
         const int port = 1231;
@@ -50,28 +83,67 @@ namespace NewChat
             _recieverThread.Start();
         }
 
-        private void RecieverTask()
+        private void ColorComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            while (true)
-            {
-                IPEndPoint recivers = new IPEndPoint(IPAddress.Any, 0);
-                var bytes = _reciever.Receive(ref recivers);
-                var message = Encoding.Default.GetString(bytes);
-                Dispatcher.Invoke(() => ChatTextBox.Text += message + Environment.NewLine);
-            }
+
         }
-        
-        private void Send(object sender, KeyEventArgs e)
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Enter:
                     Send();
                     break;
-            }        
+            }
         }
-    
-        
- 
-    
+
+        private void RecieverTask()
+        {
+            while (true)
+            {
+                IPEndPoint recivers = new IPEndPoint(IPAddress.Any, 0);
+                var bytes = _reciever.Receive(ref recivers);
+                MessageInfo messageInfo = null;
+                //var message = Encoding.Default.GetString(bytes);
+                using (var stream = new MemoryStream(bytes))
+                {
+                    var formatter = new BinaryFormatter();
+                    messageInfo = (MessageInfo)formatter.Deserialize(stream);
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    var paragraph = new Paragraph();
+                    paragraph.Inlines.Add(new Run("[" + DateTime.Now.ToString("HH:mm:ss") + "]\n"));                    
+                    paragraph.Inlines.Add(new Run(messageInfo.UserName));
+                    paragraph.Inlines.Add(new Run(" >> "));
+                    paragraph.Inlines.Add(new Run(messageInfo.Message)
+                    {
+                        Foreground = GetBrush(messageInfo.Color)
+                    });
+                    ChatDocument.Blocks.Add(paragraph);
+                    
+                });
+
+            }
+        }
+
+        private Brush GetBrush(string color)
+        {
+            switch (color)
+            {
+                case "Black":
+                    return Brushes.Black;
+                case "Red":
+                    return Brushes.Red;
+                case "Blue":
+                    return Brushes.Blue;
+                case "Green":
+                    return Brushes.Green;
+                default:
+                    return Brushes.Black;
+            }
+        }
+    }
 }

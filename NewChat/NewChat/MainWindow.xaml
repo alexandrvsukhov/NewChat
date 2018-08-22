@@ -4,20 +4,37 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NewChat"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" MinWidth="640" MinHeight="480">
+        Title="MainWindow" Height="450" Width="800" MinWidth="640" MinHeight="480" PreviewKeyDown="Window_PreviewKeyDown">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="118*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition Width="121*"/>
+            <ColumnDefinition Width="43"/>
+            <ColumnDefinition Width="157"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="ChatTextBox" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Background="LemonChiffon" Margin="10" TextWrapping="Wrap" />
-        <TextBox x:Name="MessageTextBox" Margin="10" TextWrapping="Wrap" Grid.Row="1" Grid.Column="0" />
-        <Button Content="Send" Margin="10" Grid.Row="1" Grid.Column="1" Click="Button_Click"/>
+        <TextBox x:Name="MessageTextBox" Margin="5,10,0,10" TextWrapping="Wrap" Grid.Row="2" Grid.Column="1" IsInactiveSelectionHighlightEnabled="True" Padding="0,0,23,0" />
+        <Button Content="Send" Margin="10" Grid.Row="2" Grid.Column="2" Click="Button_Click" Grid.ColumnSpan="2"/>
+        <ComboBox x:Name="ColorComboBox" SelectedIndex="0" Margin="10,10,5,10" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectionChanged="ColorComboBox_SelectionChanged">
+            <ComboBox.Items>
+                <sys:String>Black</sys:String>
+                <sys:String>Red</sys:String>
+                <sys:String>Blue</sys:String>
+                <sys:String>Green</sys:String>                        
+            </ComboBox.Items>            
+        </ComboBox>
+
+        <RichTextBox x:Name="MessageRichTextBox" Margin="10" VerticalContentAlignment="Stretch" Grid.RowSpan="2" Grid.ColumnSpan="4" Background="#FFE6E8B7" IsReadOnly="True">
+            <FlowDocument x:Name="ChatDocument"/>
+
+        </RichTextBox>
+        <TextBox x:Name="UserNameTextBox" Grid.Column="3" Margin="0,10,10,0" TextWrapping="Wrap" CaretBrush="Black" Background="#FF78ECEC" />
 
     </Grid>
 </Window>
