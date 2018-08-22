@@ -27,10 +27,15 @@ namespace NewChat
         IPEndPoint _localEP, _remoteEP;
         Thread _recieverThread;
 
+        private delegate void Del(string message);
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            MessageTextBox.WriteLine("Name");
             var bytes = Encoding.Default.GetBytes(MessageTextBox.Text);
             _sender.Send(bytes, bytes.Length, _remoteEP);
+            MessageTextBox.WriteLine(DateTime.Now);
+            Del Send = new Del(Button_Click);
         }
 
         const int port = 1231;
@@ -41,7 +46,7 @@ namespace NewChat
             _localEP = new IPEndPoint(IPAddress.Any, port);
             _sender = new UdpClient();
             _reciever = new UdpClient(_localEP);
-            _recieverThread = new Thread(RecieverTask) { IsBackground = true};
+            _recieverThread = new Thread(RecieverTask) { IsBackground = true };
             _recieverThread.Start();
         }
 
@@ -52,10 +57,19 @@ namespace NewChat
                 IPEndPoint recivers = new IPEndPoint(IPAddress.Any, 0);
                 var bytes = _reciever.Receive(ref recivers);
                 var message = Encoding.Default.GetString(bytes);
-                Dispatcher.Invoke(() =>ChatTextBox.Text += message + Environment.NewLine);
+                Dispatcher.Invoke(() => ChatTextBox.Text += message + Environment.NewLine);
             }
         }
-    }
+        
+        private void Send(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    Send();
+                    break;
+            }        
+        }
     
         
  
